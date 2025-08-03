@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Evaluation Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #6c63ff;
+        }
+        .header h1 {
+            margin: 0;
+            color: #6c63ff;
+        }
+        .header p {
+            margin: 5px 0 0;
+            color: #555;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            color: #342ead;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .summary-table td:first-child {
+            font-weight: bold;
+            width: 30%;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Employee Evaluation Report</h1>
+            <p>A comprehensive performance overview</p>
+        </div>
+
+        <div class="section">
+            <h2>General Information</h2>
+            <table class="summary-table">
+                <tr><td>Name</td><td>{{ employee_name }}</td></tr>
+                <tr><td>Team</td><td>{{ team }}</td></tr>
+                <tr><td>Evaluation Period</td><td>{{ evaluation_period }}</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Attendance Summary</h2>
+            <table class="summary-table">
+                <tr><td>Total Working Days</td><td>{{ attendance_summary.total_days }}</td></tr>
+                <tr><td>Days Present</td><td>{{ attendance_summary.present_days }}</td></tr>
+                <tr><td>Days Absent</td><td>{{ attendance_summary.absent_days }}</td></tr>
+            </table>
+            {% if attendance_details %}
+            <h3>Absence Details</h3>
+            <table>
+                <thead><tr><th>Date</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for day in attendance_details %}
+                    <tr><td>{{ day.date }}</td><td>{{ day.status }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h2>Sprint Velocity</h2>
+            <div class="chart-container">
+                <canvas id="sprintVelocityChart"></canvas>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Sprint</th><th>Committed Work</th><th>Delivered Work</th></tr>
+                </thead>
+                <tbody>
+                    {% for sprint in sprint_velocity %}
+                    <tr>
+                        <td>{{ sprint.sprint }}</td>
+                        <td>{{ sprint.committed }}</td>
+                        <td>{{ sprint.delivered }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Monthly Evaluation Outcomes</h2>
+            <p><strong>Overall Performance:</strong> {{ monthly_evaluation['Overall Performance'] }}</p>
+            <h3>Key Strengths</h3>
+            <ul>
+                {% for strength in monthly_evaluation['Key Strengths'] %}
+                <li>{{ strength }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Areas for Improvement</h3>
+            <ul>
+                {% for area in monthly_evaluation['Areas for Improvement'] %}
+                <li>{{ area }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Trainer's Feedback</h2>
+            <ul>
+                {% for feedback in trainers_feedback %}
+                <li>{{ feedback }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- <div class="footer">
+            <p>Report generated on: {{ generation_date }}</p>
+        </div> -->
+    </div>
+
+    <script>
+        const ctx = document.getElementById('sprintVelocityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for sprint in sprint_velocity %}'{{ sprint.sprint }}',{% endfor %}],
+                datasets: [{
+                    label: 'Committed Work',
+                    data: [{% for sprint in sprint_velocity %}{{ sprint.committed }},{% endfor %}],
+                    backgroundColor: 'rgba(108, 99, 255, 0.5)',
+                    borderColor: 'rgba(108, 99, 255, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Delivered Work',
+                    data: [{% for sprint in sprint_velocity %}{{ sprint.delivered }},{% endfor %}],
+                    backgroundColor: 'rgba(52, 46, 173, 0.7)',
+                    borderColor: 'rgba(52, 46, 173, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

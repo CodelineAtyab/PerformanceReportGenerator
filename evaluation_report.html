@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Evaluation Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #6c63ff;
+        }
+        .header h1 {
+            margin: 0;
+            color: #6c63ff;
+        }
+        .header p {
+            margin: 5px 0 0;
+            color: #555;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            color: #342ead;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .summary-table td:first-child {
+            font-weight: bold;
+            width: 30%;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Employee Evaluation Report</h1>
+            <p>A comprehensive performance overview</p>
+        </div>
+
+        <div class="section">
+            <h2>General Information</h2>
+            <table class="summary-table">
+                <tr><td>Employee Name</td><td>Jane Smith</td></tr>
+                <tr><td>Team</td><td>Phoenix DevOps</td></tr>
+                <tr><td>Evaluation Period</td><td>July 2025</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Attendance Summary</h2>
+            <table class="summary-table">
+                <tr><td>Total Working Days</td><td>22</td></tr>
+                <tr><td>Days Present</td><td>20</td></tr>
+                <tr><td>Days Absent</td><td>2</td></tr>
+            </table>
+            
+            <h3>Absence Details</h3>
+            <table>
+                <thead><tr><th>Date</th><th>Status</th></tr></thead>
+                <tbody>
+                    
+                    <tr><td>2025-07-07</td><td>Absent</td></tr>
+                    
+                    <tr><td>2025-07-18</td><td>Absent</td></tr>
+                    
+                </tbody>
+            </table>
+            
+        </div>
+
+        <div class="section">
+            <h2>Sprint Velocity</h2>
+            <div class="chart-container">
+                <canvas id="sprintVelocityChart"></canvas>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Sprint</th><th>Committed Work</th><th>Delivered Work</th></tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>Sprint 25.1</td>
+                        <td>30</td>
+                        <td>28</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Sprint 25.2</td>
+                        <td>35</td>
+                        <td>35</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Sprint 25.3</td>
+                        <td>32</td>
+                        <td>34</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Sprint 25.4</td>
+                        <td>40</td>
+                        <td>38</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Monthly Evaluation Outcomes</h2>
+            <p><strong>Overall Performance:</strong> Exceeds Expectations</p>
+            <h3>Key Strengths</h3>
+            <ul>
+                
+                <li>Excellent problem-solving skills in CI/CD pipeline optimization.</li>
+                
+                <li>Proactive communication within the team.</li>
+                
+                <li>Strong grasp of containerization technologies (Docker, Kubernetes).</li>
+                
+            </ul>
+            <h3>Areas for Improvement</h3>
+            <ul>
+                
+                <li>Could delegate tasks more effectively to junior team members.</li>
+                
+                <li>Expand knowledge in cloud cost management.</li>
+                
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Trainer's Feedback</h2>
+            <ul>
+                
+                <li>Jane is a quick learner and actively participates in advanced Kubernetes workshops.</li>
+                
+                <li>She has successfully applied concepts from the "Infrastructure as Code" training to real-world projects.</li>
+                
+                <li>Her feedback on training materials is always insightful and helps improve the content for others.</li>
+                
+            </ul>
+        </div>
+
+        <!-- <div class="footer">
+            <p>Report generated on: 2025-08-03 08:57:11</p>
+        </div> -->
+    </div>
+
+    <script>
+        const ctx = document.getElementById('sprintVelocityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Sprint 25.1','Sprint 25.2','Sprint 25.3','Sprint 25.4',],
+                datasets: [{
+                    label: 'Committed Work',
+                    data: [30,35,32,40,],
+                    backgroundColor: 'rgba(108, 99, 255, 0.5)',
+                    borderColor: 'rgba(108, 99, 255, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Delivered Work',
+                    data: [28,35,34,38,],
+                    backgroundColor: 'rgba(52, 46, 173, 0.7)',
+                    borderColor: 'rgba(52, 46, 173, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
