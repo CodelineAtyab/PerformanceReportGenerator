@@ -47,7 +47,7 @@ if __name__ == '__main__':
             'absent_days': 1
         },
         'attendance_details': [
-            {'date': '2025-07-22', 'status': 'Absent (1st Half) Late arrival'},
+            {'date': '2025-07-22', 'status': 'Absent (1st Half) Arrived late'},
             {'date': '2025-07-24', 'status': 'Absent (2nd Half) Left early'}
         ],
         
