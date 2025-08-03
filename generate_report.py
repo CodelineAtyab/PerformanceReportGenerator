@@ -36,45 +36,49 @@ if __name__ == '__main__':
     # APIs, or other sources.
 
     report_data = {
-        'employee_name': 'Jane Smith',
-        'team': 'Phoenix DevOps',
-        'evaluation_period': 'July 2025',
+        'employee_name': 'Yousif',
+        'team': 'AIOps (Team Code Orbit)',
+        'evaluation_period': 'Overall',
         'generation_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         
         'attendance_summary': {
-            'total_days': 22,
-            'present_days': 20,
-            'absent_days': 2
+            'total_days': 81,
+            'present_days': 80,
+            'absent_days': 1
         },
         'attendance_details': [
-            {'date': '2025-07-07', 'status': 'Absent'},
-            {'date': '2025-07-18', 'status': 'Absent'},
+            {'date': '2025-07-22', 'status': 'Absent (1st Half) Late arrival'},
+            {'date': '2025-07-24', 'status': 'Absent (2nd Half) Late arrival'}
         ],
         
         'sprint_velocity': [
-            {'sprint': 'Sprint 25.1', 'committed': 30, 'delivered': 28},
-            {'sprint': 'Sprint 25.2', 'committed': 35, 'delivered': 35},
-            {'sprint': 'Sprint 25.3', 'committed': 32, 'delivered': 34},
-            {'sprint': 'Sprint 25.4', 'committed': 40, 'delivered': 38},
+            {'sprint': 'Sprint 1 & 2 [Overview & Datastructures]', 'committed': 100, 'delivered': ((30/50) * 100)},
+            {'sprint': 'Sprint 3 & 4 [Computer Networks & APIs]', 'committed': 100, 'delivered': ((20/50) * 100)},
+            {'sprint': 'Sprint 5 & 6 [Databases & REST API]', 'committed': 100, 'delivered': ((0/50) * 100)},
+            {'sprint': 'Sprint 7 & 8 [Data Analysis & Machine Learning]', 'committed': 100, 'delivered': ((33.3/50) * 100)},
         ],
         
         'monthly_evaluation': {
-            'Overall Performance': 'Exceeds Expectations',
+            'Overall Performance': 'Below Average',
             'Key Strengths': [
-                'Excellent problem-solving skills in CI/CD pipeline optimization.',
-                'Proactive communication within the team.',
-                'Strong grasp of containerization technologies (Docker, Kubernetes).'
+                'He can speak for his team.',
+                'He clearly states if he feels something is wrong.',
             ],
             'Areas for Improvement': [
-                'Could delegate tasks more effectively to junior team members.',
-                'Expand knowledge in cloud cost management.'
+                'Avoid copying others, try to understand the task and complete it independently.',
+                'Reduce the dependency on others for task completion.',
+                'Utilize the time effectively to complete the tasks.',
+                'Focus on the sessions and try to come up with questions.',
+                'Focus on self upskilling rather than thinking about other matters.',
+                'Improve the selection of words to communicate without causing misunderstandings.'
             ]
         },
         
         'trainers_feedback': [
-            'Jane is a quick learner and actively participates in advanced Kubernetes workshops.',
-            'She has successfully applied concepts from the "Infrastructure as Code" training to real-world projects.',
-            'Her feedback on training materials is always insightful and helps improve the content for others.'
+            'Yousif usually stays calm and tries to focus on the sessions but it seems that its hard for him to do that.',
+            'He is able to do some basic tasks but generally relies a lot on others for assistance.',
+            'With consistent practice, he can improve his understanding of the concepts which will motivate him to explore more on his own.',
+            'He can do really well if he is really interested in something like he did participate very well in the "Databases" sessions.'
         ]
     }
 
