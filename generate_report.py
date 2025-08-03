@@ -52,14 +52,20 @@ if __name__ == '__main__':
         ],
         
         'sprint_velocity': [
-            {'sprint': 'Sprint 1 & 2 [Overview & Datastructures]', 'committed': 100, 'delivered': ((30/50) * 100)},
-            {'sprint': 'Sprint 3 & 4 [Computer Networks & APIs]', 'committed': 100, 'delivered': ((20/50) * 100)},
-            {'sprint': 'Sprint 5 & 6 [Databases & REST API]', 'committed': 100, 'delivered': ((0/50) * 100)},
-            {'sprint': 'Sprint 7 & 8 [Data Analysis & Machine Learning]', 'committed': 100, 'delivered': ((33.3/50) * 100)},
+            {'sprint': 'Sprint 1 & 2 [Overview & Datastructures]', 'committed': 100, 'delivered': ((30/50) * 100), 'plagiarism': 'Yes'},
+            {'sprint': 'Sprint 3 & 4 [Computer Networks & APIs]', 'committed': 100, 'delivered': ((20/50) * 100), 'plagiarism': 'Yes'},
+            {'sprint': 'Sprint 5 & 6 [Databases & REST API]', 'committed': 100, 'delivered': ((15/50) * 100), 'plagiarism': 'No'},
+            {'sprint': 'Sprint 7 & 8 [Data Analysis & Machine Learning]', 'committed': 100, 'delivered': ((33.3/50) * 100), 'plagiarism': 'Yes'},
         ],
         
         'monthly_evaluation': {
             'Overall Performance': 'Below Average',
+            'Monthly Progress': [
+                {'month': 'April', 'percentage': 16, 'notes': 'Most of the coding related solutions were left empty.'},
+                {'month': 'May', 'percentage': 49.3, 'notes': 'Only a warning for copy/pasting was issued. JPlag detected plagiarism in submissions.'},
+                {'month': 'June', 'percentage': 0, 'notes': "Didn't submit"},
+                {'month': 'July', 'percentage': 0, 'notes': 'Submitted but failed the viva and unable to explain anything.'}
+            ],
             'Key Strengths': [
                 'He can speak for his team.',
                 'He clearly states if he feels something is wrong.',
@@ -75,10 +81,10 @@ if __name__ == '__main__':
         },
         
         'trainers_feedback': [
-            'Yousif usually stays calm and tries to focus on the sessions but it seems that its hard for him to do that.',
-            'He is able to do some basic tasks but generally relies a lot on others for assistance.',
-            'With consistent practice, he can improve his understanding of the concepts which will motivate him to explore more on his own.',
-            'He can do really well if he is really interested in something like he did participate very well in the "Databases" sessions.'
+            'He is not able to focus during the sessions thus unable to answer any question that is asked.',
+            'His mind is usually occupied with other thoughts preventing him from engaging at all.',
+            'He seems to have no interest in programming, although he has the potential to do well if he develops interest like he did participate well in the "Databases" sessions.',
+            'He has to be extremely consistent in practice, so he can start understanding the basics and start catching up.'
         ]
     }
 

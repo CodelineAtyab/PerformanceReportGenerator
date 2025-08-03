@@ -125,7 +125,7 @@
             </div>
             <table>
                 <thead>
-                    <tr><th>Sprint</th><th>Committed Work (%)</th><th>Delivered Work (%)</th></tr>
+                    <tr><th>Sprint</th><th>Committed Work (%)</th><th>Delivered Work (%)</th><th>Plagiarism</th></tr>
                 </thead>
                 <tbody>
                     {% for sprint in sprint_velocity %}
@@ -133,6 +133,7 @@
                         <td>{{ sprint.sprint }}</td>
                         <td>{{ sprint.committed }}</td>
                         <td>{{ sprint.delivered }}</td>
+                        <td style="color: {% if sprint.plagiarism == 'Yes' %}red{% else %}green{% endif %}; font-weight: bold;">{{ sprint.plagiarism|default("No") }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -143,6 +144,27 @@
         <div class="section">
             <h2>Monthly Evaluation Outcomes</h2>
             <p><strong>Overall Performance: </strong><span style="font-weight: bold;">{{ monthly_evaluation['Overall Performance'] }}</span></p>
+            
+            <h3>Monthly Progress</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Performance (%)</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for month in monthly_evaluation['Monthly Progress']|default([]) %}
+                    <tr>
+                        <td>{{ month.month }}</td>
+                        <td>{{ month.percentage }}</td>
+                        <td>{{ month.notes }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
             <h3>Key Strengths</h3>
             <ul>
                 {% for strength in monthly_evaluation['Key Strengths'] %}
