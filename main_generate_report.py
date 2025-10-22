@@ -2,6 +2,12 @@ import jinja2
 import os
 from datetime import datetime
 
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_PARENT_DIR = os.path.join(BASE_DIR, 'templates')
+OUTPUT_DIR = os.path.join(BASE_DIR, 'output_reports')
+
+
 def generate_evaluation_report(data, template_name='report_template.html', output_filename='evaluation_report.html'):
     """
     Generates an HTML evaluation report from a template and data.
@@ -12,7 +18,7 @@ def generate_evaluation_report(data, template_name='report_template.html', outpu
     """
     try:
         # Set up Jinja2 environment
-        template_loader = jinja2.FileSystemLoader(searchpath=".")
+        template_loader = jinja2.FileSystemLoader(searchpath=TEMPLATE_PARENT_DIR)
         template_env = jinja2.Environment(loader=template_loader)
         template = template_env.get_template(template_name)
 
@@ -20,10 +26,10 @@ def generate_evaluation_report(data, template_name='report_template.html', outpu
         output_html = template.render(data)
 
         # Write the output to a file
-        with open(output_filename, 'w') as f:
+        with open(os.path.join(OUTPUT_DIR, output_filename), 'w') as f:
             f.write(output_html)
 
-        print(f"Successfully generated report: {os.path.abspath(output_filename)}")
+        print(f"Successfully generated report: {os.path.abspath(os.path.join(OUTPUT_DIR, output_filename))}")
 
     except jinja2.TemplateNotFound:
         print(f"Error: Template '{template_name}' not found.")
