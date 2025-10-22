@@ -1,0 +1,1 @@
+Currently excel files with a defined structure are supported.
