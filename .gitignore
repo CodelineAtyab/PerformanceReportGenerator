@@ -7,3 +7,4 @@ __pycache__/
 .idea/
 output_reports/
 logs/
+transformed_data/
