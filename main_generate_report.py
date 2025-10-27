@@ -1,10 +1,13 @@
 import jinja2
 import os
+import json
 from datetime import datetime
+from collections import defaultdict
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PARENT_DIR = os.path.join(BASE_DIR, 'templates')
+TRANSFORMED_DATA_DIR = os.path.join(BASE_DIR, 'transformed_data')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'output_reports')
 
 
@@ -95,4 +98,42 @@ if __name__ == '__main__':
     }
 
     # Generate the report
-    generate_evaluation_report(report_data)
+    # generate_evaluation_report(report_data)
+
+    # for transformed_file in os.listdir(TRANSFORMED_DATA_DIR):
+    #     if transformed_file.endswith('.json'):
+    #         try:
+    #             with open(os.path.join(TRANSFORMED_DATA_DIR, transformed_file), 'r', encoding='utf-8') as json_file:
+    #                 json_file = json.load(json_file)
+
+    #                 for month_name_key, month_data in json_file.items():
+    #                     team_members_eval_data = defaultdict(dict)
+    #                     # Iterate through each team member in the month and store performance data
+    #                     for team_member_name_key, team_member_data in month_data.items():
+    #                         if team_member_name_key != "sprint_info":
+    #                             data_to_append = {}
+    #                             for heading, value in team_member_data[-4:]:
+    #                                 data_to_append[heading] = value
+                                
+    #                             if team_member_name_key not in team_members_eval_data:
+    #                                 team_members_eval_data[team_member_name_key] = data_to_append
+    #                             else:
+    #                                 for heading, score in data_to_append.items():
+    #                                     team_members_eval_data[team_member_name_key][heading] += score
+                        
+    #                     # Collects the monthly sprints information
+    #                     collected_sprint_number = ""
+    #                     collected_sprint_name = ""
+    #                     for sprint_no, sprint_data in month_data['sprint_info'].items():
+    #                         collected_sprint_number += f"{sprint_no.strip(':')} & "
+    #                         collected_sprint_name += f"{sprint_data.get('name_of_sprint', '')} & "
+    #                     collected_sprint_number = collected_sprint_number.strip(' & ')
+    #                     collected_sprint_name = collected_sprint_name.strip(' & ')
+    #                     print(f"Sprint Numbers: {collected_sprint_number}")
+    #                     print(f"Sprint Names: {collected_sprint_name}")
+
+
+    #             # output_file = transformed_file.replace('.json', '_report.html')
+    #             # generate_evaluation_report(data, output_filename=output_file)
+    #         except Exception as e:
+    #             print(f"Failed to generate report for {transformed_file}: {e}")

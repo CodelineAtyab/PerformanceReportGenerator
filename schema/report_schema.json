@@ -1,0 +1,154 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Employee Performance Report",
+  "description": "A schema for representing an employee's performance report.",
+  "type": "object",
+  "properties": {
+    "employee_name": {
+      "description": "The name of the employee.",
+      "type": "string"
+    },
+    "team": {
+      "description": "The team the employee belongs to.",
+      "type": "string"
+    },
+    "evaluation_period": {
+      "description": "The period for which the evaluation is being conducted.",
+      "type": "string"
+    },
+    "generation_date": {
+      "description": "The date and time when the report was generated.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "attendance_summary": {
+      "description": "A summary of the employee's attendance.",
+      "type": "object",
+      "properties": {
+        "total_days": {
+          "description": "Total number of working days in the period.",
+          "type": "integer"
+        },
+        "present_days": {
+          "description": "Number of days the employee was present.",
+          "type": "integer"
+        },
+        "absent_days": {
+          "description": "Number of days the employee was absent.",
+          "type": "integer"
+        }
+      },
+      "required": ["total_days", "present_days", "absent_days"]
+    },
+    "attendance_details": {
+      "description": "Detailed records of attendance issues.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "The date of the attendance record.",
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "description": "The status of attendance for that day (e.g., reason for absence).",
+            "type": "string"
+          }
+        },
+        "required": ["date", "status"]
+      }
+    },
+    "sprint_velocity": {
+      "description": "The employee's performance across different sprints.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sprint": {
+            "description": "The name or identifier of the sprint.",
+            "type": "string"
+          },
+          "committed": {
+            "description": "The percentage of work committed to.",
+            "type": "number"
+          },
+          "delivered": {
+            "description": "The percentage of work delivered.",
+            "type": "number"
+          },
+          "plagiarism": {
+            "description": "Indicates if plagiarism was detected.",
+            "type": "string",
+            "enum": ["Yes", "No"]
+          }
+        },
+        "required": ["sprint", "committed", "delivered", "plagiarism"]
+      }
+    },
+    "monthly_evaluation": {
+      "description": "A detailed monthly evaluation of the employee's performance.",
+      "type": "object",
+      "properties": {
+        "Overall Performance": {
+          "description": "The overall performance rating.",
+          "type": "string"
+        },
+        "Monthly Progress": {
+          "description": "A month-by-month breakdown of performance.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "month": {
+                "description": "The month of the evaluation.",
+                "type": "string"
+              },
+              "percentage": {
+                "description": "The performance percentage for the month.",
+                "type": "number"
+              },
+              "notes": {
+                "description": "Specific notes or comments for the month's performance.",
+                "type": "string"
+              }
+            },
+            "required": ["month", "percentage", "notes"]
+          }
+        },
+        "Key Strengths": {
+          "description": "A list of the employee's key strengths.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Areas for Improvement": {
+          "description": "A list of areas where the employee can improve.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["Overall Performance", "Monthly Progress", "Key Strengths", "Areas for Improvement"]
+    },
+    "trainers_feedback": {
+      "description": "Feedback from the trainers.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "employee_name",
+    "team",
+    "evaluation_period",
+    "generation_date",
+    "attendance_summary",
+    "sprint_velocity",
+    "monthly_evaluation",
+    "trainers_feedback"
+  ]
+}
