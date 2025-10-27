@@ -7,7 +7,7 @@ from collections import defaultdict
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PARENT_DIR = os.path.join(BASE_DIR, 'templates')
-TRANSFORMED_DATA_DIR = os.path.join(BASE_DIR, 'transformed_data')
+TRANSFORMED_JSON_DATA_DIR = os.path.join(BASE_DIR, 'transformed_data', 'individual_reports')
 OUTPUT_DIR = os.path.join(BASE_DIR, 'output_reports')
 
 
@@ -39,10 +39,25 @@ def generate_evaluation_report(data, template_name='report_template.html', outpu
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
+def generate_all_evaluation_reports():
+    """
+    Generates evaluation reports for all JSON files in the transformed data directory.
+    """
+    for transformed_file in os.listdir(TRANSFORMED_JSON_DATA_DIR):
+        if transformed_file.endswith('.json'):
+            try:
+                with open(os.path.join(TRANSFORMED_JSON_DATA_DIR, transformed_file), 'r', encoding='utf-8') as json_file:
+                    json_file_dict = json.load(json_file)
+
+                    # Generate the report
+                    generate_evaluation_report(json_file_dict, output_filename=transformed_file.replace('.json', '_report.html'))
+            except Exception as e:
+                print(f"Failed to generate report for {transformed_file}: {e}")
+
+
 if __name__ == '__main__':
-    # --- Sample Data ---
-    # In a real application, you would fetch this data from a database,
-    # APIs, or other sources.
+    """Example of input JSON Data
 
     report_data = {
         'employee_name': 'Yousif',
@@ -96,44 +111,7 @@ if __name__ == '__main__':
             'He has to be extremely consistent in practice, so he can start understanding the basics and start catching up.'
         ]
     }
+    """
 
-    # Generate the report
-    # generate_evaluation_report(report_data)
-
-    # for transformed_file in os.listdir(TRANSFORMED_DATA_DIR):
-    #     if transformed_file.endswith('.json'):
-    #         try:
-    #             with open(os.path.join(TRANSFORMED_DATA_DIR, transformed_file), 'r', encoding='utf-8') as json_file:
-    #                 json_file = json.load(json_file)
-
-    #                 for month_name_key, month_data in json_file.items():
-    #                     team_members_eval_data = defaultdict(dict)
-    #                     # Iterate through each team member in the month and store performance data
-    #                     for team_member_name_key, team_member_data in month_data.items():
-    #                         if team_member_name_key != "sprint_info":
-    #                             data_to_append = {}
-    #                             for heading, value in team_member_data[-4:]:
-    #                                 data_to_append[heading] = value
-                                
-    #                             if team_member_name_key not in team_members_eval_data:
-    #                                 team_members_eval_data[team_member_name_key] = data_to_append
-    #                             else:
-    #                                 for heading, score in data_to_append.items():
-    #                                     team_members_eval_data[team_member_name_key][heading] += score
-                        
-    #                     # Collects the monthly sprints information
-    #                     collected_sprint_number = ""
-    #                     collected_sprint_name = ""
-    #                     for sprint_no, sprint_data in month_data['sprint_info'].items():
-    #                         collected_sprint_number += f"{sprint_no.strip(':')} & "
-    #                         collected_sprint_name += f"{sprint_data.get('name_of_sprint', '')} & "
-    #                     collected_sprint_number = collected_sprint_number.strip(' & ')
-    #                     collected_sprint_name = collected_sprint_name.strip(' & ')
-    #                     print(f"Sprint Numbers: {collected_sprint_number}")
-    #                     print(f"Sprint Names: {collected_sprint_name}")
-
-
-    #             # output_file = transformed_file.replace('.json', '_report.html')
-    #             # generate_evaluation_report(data, output_filename=output_file)
-    #         except Exception as e:
-    #             print(f"Failed to generate report for {transformed_file}: {e}")
+    # Generate .html reports for all team members
+    generate_all_evaluation_reports()
