@@ -97,7 +97,10 @@ def extract_row_data(sheet, row_num):
         header = str(header_cell).strip()
         value = str(value_cell).strip() if value_cell is not None else ""
         
-        data.append((header, value))
+        # Append specific columns only
+        if any(header_name_to_filter in header.lower() for header_name_to_filter in ["sprint commitments", "mini quizzes", "monthly evaluation", "final evaluation", "total score"]):
+            data.append((header, value))
+        
         col += 1
     
     return data
