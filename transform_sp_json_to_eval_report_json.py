@@ -19,7 +19,9 @@ OUTPUT_DIR = BASE_DIR / "transformed_data" / "individual_reports"
 
 # Keys used inside the source Excel-derived JSON structure.
 SPRINT_SCORE_KEY = "Sprint commitments vs deliveries total score (out of 50%)"
+LOW_WEIGHT_SPRINT_SCORE_KEY = "Sprint commitments vs deliveries total score (out of 10%)"
 QUIZ_SCORE_KEY = "Mini Quizzes total score (out of 10%)"
+HACKATHON_SCORE_KEY = "Hackathon (out of 50%)"
 MONTHLY_EVAL_KEY = "Monthly Evaluation (out of 40%)"
 TOTAL_SCORE_KEY = "Total Score (out of 100%)"
 
@@ -80,18 +82,18 @@ def _parse_member_metrics(raw_metrics: Iterable[List[str]]) -> Dict[str, Optiona
 	return metric_map
 
 
-def _derive_monthly_note(metrics: Dict[str, Optional[float]]) -> str:
+def _derive_monthly_note(metrics: Dict[str, Optional[float]], for_month: str) -> str:
 	sprint_score = metrics.get(SPRINT_SCORE_KEY)
 	quiz_score = metrics.get(QUIZ_SCORE_KEY)
 	monthly_eval = metrics.get(MONTHLY_EVAL_KEY)
 	return (
 		"Sprint score: {sprint}, Quiz: {quiz}, Monthly evaluation: {monthly}."
 		.format(
-			sprint=f"{sprint_score:.2f}" if sprint_score is not None else "N/A",
-			quiz=f"{quiz_score:.2f}" if quiz_score is not None else "N/A",
-			monthly=f"{monthly_eval:.2f}" if monthly_eval is not None else "N/A",
+			sprint=f"{sprint_score:.2f}%" if sprint_score is not None else "N/A",
+			quiz=f"{quiz_score:.2f}%" if quiz_score is not None else "N/A",
+			monthly=f"{monthly_eval:.2f}%" if monthly_eval is not None else "N/A",
 		)
-	)
+	) if for_month != "August 2025" else f"Sprint score: {sprint_score:.2f}%, Hackathon score: {metrics.get(HACKATHON_SCORE_KEY, 0.0):.2f}%."
 
 
 def _build_monthly_progress(
@@ -113,17 +115,14 @@ def _build_monthly_progress(
 		progress.append(
 			{
 				"month": month,
-				"percentage": total_score,
-				"notes": _derive_monthly_note(metrics),
+				"percentage": total_score if month not in ("September 2025", "October 2025") else total_score * 100,
+				"notes": _derive_monthly_note(metrics, for_month=month),
 			}
 		)
 	return progress
 
 
-def _build_sprint_velocity(
-	member_name: str,
-	team_payload: Dict[str, dict],
-) -> List[Dict[str, object]]:
+def _build_sprint_velocity(member_name: str, team_payload: Dict[str, dict],) -> List[Dict[str, object]]:
 	velocity: List[Dict[str, object]] = []
 	for month in TARGET_MONTHS:
 		month_data = team_payload.get(month)
@@ -133,16 +132,16 @@ def _build_sprint_velocity(
 		if not raw_metrics:
 			continue
 		metrics = _parse_member_metrics(raw_metrics)
-		sprint_committed = metrics.get(SPRINT_SCORE_KEY) or 0.0
-		total_delivered = metrics.get(TOTAL_SCORE_KEY) or 0.0
+		sprint_committed = 50 if month not in ("September 2025", "October 2025") else 10  # Last two sprints have less weight
+		total_delivered = metrics.get(SPRINT_SCORE_KEY) if metrics.get(SPRINT_SCORE_KEY) else metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
 		velocity.append(
 			{
 				"sprint": month,
 				"committed": round(sprint_committed, 2),
-				"delivered": round(total_delivered, 2),
-				"plagiarism": "No",
+				"delivered": round(total_delivered, 2) if month not in ("September 2025", "October 2025") else round(total_delivered * 100, 2)
 			}
 		)
+	
 	return velocity
 
 

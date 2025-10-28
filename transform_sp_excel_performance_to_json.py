@@ -6,7 +6,7 @@ import calendar
 
 # Define directories
 INPUT_DIR = "./input_data"
-OUTPUT_DIR = "./transformed_data"
+OUTPUT_DIR = "./transformed_data/sharepoint_excel_to_json_data"
 
 # Valid month names for validation
 VALID_MONTHS = [month.lower() for month in calendar.month_name if month] + \
@@ -98,7 +98,12 @@ def extract_row_data(sheet, row_num):
         value = str(value_cell).strip() if value_cell is not None else ""
         
         # Append specific columns only
-        if any(header_name_to_filter in header.lower() for header_name_to_filter in ["sprint commitments", "mini quizzes", "monthly evaluation", "final evaluation", "total score"]):
+        if any(header_name_to_filter in header.lower() for header_name_to_filter in ["sprint commitments", 
+                                                                                     "mini quizzes", 
+                                                                                     "monthly evaluation", 
+                                                                                     "final evaluation",
+                                                                                     "hackathon",
+                                                                                     "total score"]):
             data.append((header, value))
         
         col += 1
