@@ -23,6 +23,7 @@ LOW_WEIGHT_SPRINT_SCORE_KEY = "Sprint commitments vs deliveries total score (out
 QUIZ_SCORE_KEY = "Mini Quizzes total score (out of 10%)"
 HACKATHON_SCORE_KEY = "Hackathon (out of 50%)"
 MONTHLY_EVAL_KEY = "Monthly Evaluation (out of 40%)"
+FINAL_EVAL_KEY = "Final Evaluation (out of 90%)"
 TOTAL_SCORE_KEY = "Total Score (out of 100%)"
 
 # Months we currently care about for this export pipeline.
@@ -83,17 +84,23 @@ def _parse_member_metrics(raw_metrics: Iterable[List[str]]) -> Dict[str, Optiona
 
 
 def _derive_monthly_note(metrics: Dict[str, Optional[float]], for_month: str) -> str:
-	sprint_score = metrics.get(SPRINT_SCORE_KEY)
+	sprint_score = metrics.get(SPRINT_SCORE_KEY) if for_month not in ("September 2025", "October 2025") else metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
 	quiz_score = metrics.get(QUIZ_SCORE_KEY)
-	monthly_eval = metrics.get(MONTHLY_EVAL_KEY)
-	return (
-		"Sprint score: {sprint}, Quiz: {quiz}, Monthly evaluation: {monthly}."
-		.format(
-			sprint=f"{sprint_score:.2f}%" if sprint_score is not None else "N/A",
-			quiz=f"{quiz_score:.2f}%" if quiz_score is not None else "N/A",
-			monthly=f"{monthly_eval:.2f}%" if monthly_eval is not None else "N/A",
+	monthly_eval = metrics.get(MONTHLY_EVAL_KEY) if for_month not in ("September 2025", "October 2025") else metrics.get(FINAL_EVAL_KEY)
+
+	if for_month == "August 2025":
+		return f"Sprint score: {sprint_score:.2f}%, Hackathon score: {metrics.get(HACKATHON_SCORE_KEY, 0.0):.2f}%."
+	elif for_month in ("September 2025", "October 2025"):
+		return "Final evaluation in the form of technical interviews are 90% and sprint 10%"
+	else:
+		return (
+			"Sprint score: {sprint}, Quiz: {quiz}, Monthly evaluation: {monthly}."
+			.format(
+				sprint=f"{sprint_score:.2f}%" if sprint_score is not None else "N/A",
+				quiz=f"{quiz_score:.2f}%" if quiz_score is not None else "N/A",
+				monthly=f"{monthly_eval:.2f}%" if monthly_eval is not None else "N/A",
+			)
 		)
-	) if for_month != "August 2025" else f"Sprint score: {sprint_score:.2f}%, Hackathon score: {metrics.get(HACKATHON_SCORE_KEY, 0.0):.2f}%."
 
 
 def _build_monthly_progress(
@@ -186,7 +193,7 @@ def _build_member_payload(member_name: str, team_payload: Dict[str, dict]) -> Di
 	]
 
 	overall_performance = (
-		f"Average total score {avg_total:.2f}% across {len(monthly_progress)} months."
+		f"Average total score {avg_total:.2f}% across {len(monthly_progress)} months. However, the score for the last two months is the real indicator of capabilities."
 		if avg_total is not None
 		else "Performance metrics pending for this period."
 	)
