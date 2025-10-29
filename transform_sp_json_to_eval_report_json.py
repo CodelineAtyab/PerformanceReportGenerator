@@ -238,5 +238,9 @@ def generate_member_reports() -> None:
 		print(f"Generated {output_path.relative_to(BASE_DIR)}")
 
 
+def main():
+		generate_member_reports()
+
+
 if __name__ == "__main__":
-	generate_member_reports()
+	main()

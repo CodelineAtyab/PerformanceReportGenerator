@@ -1,8 +1,9 @@
 import jinja2
 import os
 import json
-from datetime import datetime
-from collections import defaultdict
+
+import transform_sp_excel_performance_to_json
+import transform_sp_json_to_eval_report_json
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -113,5 +114,11 @@ def generate_all_evaluation_reports():
 
 
 if __name__ == '__main__':
+    # Step 1: Transform Sharepoint Excel performance data to JSON
+    transform_sp_excel_performance_to_json.main()
+
+    # Step 2: Transform JSON data to evaluation report JSON
+    transform_sp_json_to_eval_report_json.main()
+
     # Generate .html reports for all team members
     generate_all_evaluation_reports()
