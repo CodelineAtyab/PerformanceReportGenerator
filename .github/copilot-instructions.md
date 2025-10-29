@@ -1,5 +1,5 @@
 ## Architecture Overview
-**Three-stage ETL pipeline**: Excel → aggregate JSON → individual report JSONs → HTML reports. Each stage is decoupled and can run independently.
+**Four-stage ETL pipeline**: Excel → aggregate JSON → individual report JSONs → HTML reports → PDF reports. Each stage is decoupled and can run independently.
 
 ### Stage 1: Excel to Aggregate JSON (`transform_sp_excel_performance_to_json.py`)
 - Ingests `input_data/*.xlsx` files and produces team-level JSON in `transformed_data/sharepoint_excel_to_json_data/`
@@ -19,12 +19,27 @@
 - **Hardcoded placeholders**: Attendance, strengths/improvements, trainers_feedback use template text; customize in `_build_member_payload()`
 - **Source file assumption**: Currently hardcoded to `team_code_orbit_data.json`; extend `generate_member_reports()` to support multiple teams
 
-### Stage 3: JSON to HTML Reports (`main_generate_report.py`)
+### Stage 3: JSON to HTML Reports (`generate_html_reports.py`)
 - Reads `transformed_data/individual_reports/*.json` and renders `templates/report_template.html` via Jinja2
 - **Path resolution**: Uses `os.path.dirname(os.path.abspath(__file__))` as base; all scripts must stay at repo root
-- **Batch generation**: `generate_all_evaluation_reports()` creates one HTML per JSON file, naming convention: `{json_name}_report.html`
+- **Batch generation**: Creates one HTML per JSON file, naming convention: `{json_name}.html`
+- **Output directory**: `output_reports_html/` (changed from `output_reports/`)
 - **Schema expectations**: Template requires `employee_name`, `team`, `evaluation_period`, `attendance_summary`, `sprint_velocity`, `monthly_evaluation`, `trainers_feedback`
 - **Chart.js integration**: `sprint_velocity` array powers inline bar chart; expects `sprint`, `committed`, `delivered` keys; optional `plagiarism: "Yes"/"No"` drives color coding
+
+### Stage 4: HTML to PDF Reports (`generate_pdf_with_playwright.py` - Recommended)
+- Converts `output_reports_html/*.html` to PDF with full JavaScript/Chart.js support
+- **Output directory**: `output_reports_pdf/`
+- **Technology**: Uses Playwright with Chromium browser for accurate rendering
+- **Chart rendering**: Waits 3 seconds for Chart.js to execute before PDF generation
+- **PDF format**: A4 with 10mm margins, print backgrounds enabled
+- **Installation**: Requires `playwright install chromium` after pip install
+- **Browser location**: Chromium installs system-wide in `%LOCALAPPDATA%\ms-playwright\` (not in venv)
+
+**Alternative: `generate_pdf_reports_using_html.py` (pdfkit - Deprecated)**
+- Uses pdfkit/wkhtmltopdf (older approach with limited JavaScript support)
+- Charts may not render properly; use Playwright version instead
+- Requires separate wkhtmltopdf binary installation
 
 ## Data Flow & Format Contracts
 ```python
@@ -59,22 +74,32 @@
 
 ### Full Pipeline Execution
 ```bash
-python main_generate_report.py  # Orchestrates all 3 stages via imports
+python main_app.py  # Orchestrates all 4 stages
 ```
-This imports and calls: `transform_sp_excel_performance_to_json.main()` → `transform_sp_json_to_eval_report_json.main()` → `generate_all_evaluation_reports()`
+This imports and calls: `transform_sp_excel_performance_to_json.main()` → `transform_sp_json_to_eval_report_json.main()` → `generate_html_reports.main()` → `generate_pdf_with_playwright.main()` (if uncommented)
 
 ### Individual Stage Testing
 ```bash
 python transform_sp_excel_performance_to_json.py     # Stage 1 only
 python transform_sp_json_to_eval_report_json.py      # Stage 2 only (requires stage 1 output)
+python generate_html_reports.py                      # Stage 3 only (requires stage 2 output)
+python generate_pdf_with_playwright.py               # Stage 4 only (requires stage 3 output)
 ```
+
+### Changelog Generation
+```bash
+python generate_changelog.py  # Creates CHANGELOG.md from git history
+```
+- Requires git installed and repository initialized
+- Outputs commit history with datetime and messages
+- Version info read from `version.txt`
 
 ### Adding a New Team
 1. Place team's Excel file in `input_data/` (e.g., `team_new_data.xlsx`)
 2. Stage 1 auto-generates `transformed_data/sharepoint_excel_to_json_data/team_new_data.json`
 3. In `transform_sp_json_to_eval_report_json.py`, duplicate `generate_member_reports()` logic or modify `SOURCE_JSON` path
 4. Update `TARGET_MONTHS` tuple if evaluation period differs
-5. Stage 3 automatically picks up new JSON files from `individual_reports/`
+5. Stages 3 & 4 automatically pick up new JSON files from `individual_reports/`
 
 ### Customizing Report Content
 - **Attendance data**: Edit `_build_member_payload()` in stage 2; currently returns hardcoded `total_days: 22, present_days: 22, absent_days: 0`
@@ -87,6 +112,7 @@ python transform_sp_json_to_eval_report_json.py      # Stage 2 only (requires st
 - All Python scripts resolve paths relative to their own location via `os.path.dirname(os.path.abspath(__file__))` or `Path(__file__).resolve().parent`
 - Maintain flat repo structure (scripts at root) to prevent path resolution failures
 - `utils/` exists but is unused; shared functions should go here with coordinated naming
+- **Output directories**: `output_reports_html/` for HTML, `output_reports_pdf/` for PDF
 
 ### JSON Serialization
 - **Always use** `ensure_ascii=False` in `json.dump()` to preserve non-English characters (feedback often contains Arabic text)
@@ -99,12 +125,19 @@ python transform_sp_json_to_eval_report_json.py      # Stage 2 only (requires st
 ### Error Handling
 - Stage 1 wraps per-file processing in try/except, prints errors but continues batch
 - Stage 2/3 assume valid input; add validation if processing untrusted data
-- No automated tests; verify by opening `output_reports/*.html` in browser and checking chart rendering
+- Stage 4 wraps conversion in try/except per file
+- No automated tests; verify by opening `output_reports_html/*.html` in browser and checking chart rendering
 
 ### Performance Considerations
 - Stage 1 uses `openpyxl` with `data_only=True` (reads cached values, not formulas) for speed
 - Batch generation creates 20+ HTML files in seconds; no optimization needed for current scale
-- If adding many teams, consider parallel processing in stage 3's loop
+- Stage 4 (Playwright) takes ~3-5 seconds per PDF due to browser startup and chart rendering
+- If adding many teams, consider parallel processing in stage 3/4 loops
+
+### Version Management
+- Current version stored in `version.txt` (plain text, single line)
+- Changelog generated via `generate_changelog.py` from git commit history
+- Format: `- [YYYY-MM-DD HH:MM:SS] <commit message>`
 
 ## Debugging Common Issues
 
@@ -112,8 +145,29 @@ python transform_sp_json_to_eval_report_json.py      # Stage 2 only (requires st
 
 **Missing members in reports**: Verify Excel column A has no empty cells before "Sprint No." row; check sheet name contains valid month
 
-**Chart not rendering**: Open browser console; ensure `sprint_velocity` array exists and has `sprint`/`committed`/`delivered` keys
+**Chart not rendering in HTML**: Open browser console; ensure `sprint_velocity` array exists and has `sprint`/`committed`/`delivered` keys
+
+**Chart not rendering in PDF**: 
+- Use `generate_pdf_with_playwright.py` (not pdfkit version)
+- Verify Playwright installed: `playwright install chromium`
+- Increase `page.wait_for_timeout(3000)` to `5000` for slower systems
+- Check Chromium installed at: `%LOCALAPPDATA%\ms-playwright\chromium-*`
 
 **Wrong sprint weights**: September/October sprints are 10% (not 50%); check month-specific logic in `_build_sprint_velocity()`
 
 **Non-English characters broken**: Confirm `encoding='utf-8'` and `ensure_ascii=False` in all file I/O operations
+
+**Playwright errors**: 
+- Run `playwright install` to download browsers
+- Chromium binary is system-wide (~200MB in `AppData\Local\ms-playwright\`)
+- If venv deleted, browser remains; no reinstall needed for new venvs
+
+**Git not found for changelog**: Install Git and ensure it's in system PATH; verify with `git --version`
+
+## Dependencies
+- **Jinja2** (3.1.6): Template rendering
+- **openpyxl** (3.1.5): Excel parsing
+- **pdfkit** (1.0.0): PDF generation (deprecated, use Playwright)
+- **Playwright** (1.55.0): Modern PDF generation with JS support (recommended)
+
+Install: `pip install -r requirements.txt && playwright install chromium`
