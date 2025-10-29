@@ -33,39 +33,36 @@ The Performance Report Generator is a tool designed to create performance report
   pip install -r requirements.txt
   ```
 
-## Usage
+## How to run project
 
-To generate the performance reports, you need to run a series of scripts in order. The main script orchestrates the entire process, but you can also run the steps individually.
-
-### Running All Steps
-
-To run all the steps and generate the final report, use the `main_generate_report.py` script:
+### Full Pipeline Execution
+To run the complete three-stage ETL pipeline (Excel → JSON → Reports):
 
 ```bash
-python main_generate_report.py
+python main_app.py
 ```
 
-This script will:
-1. Transform the Excel data to JSON format.
-2. Transform the JSON data to the evaluation report format.
-3. Generate the final HTML report.
+This orchestrates all three stages:
+1. **Stage 1**: Transforms Excel files from `input_data/` to aggregate JSON in `transformed_data/sharepoint_excel_to_json_data/`
+2. **Stage 2**: Converts aggregate JSON to individual member reports in `transformed_data/individual_reports/`
+3. **Stage 3**: Generates HTML reports in `output_reports/`
 
-### Individual Steps
+### Running Individual Stages
 
-You can also run each step individually:
+If you need to run stages independently for testing or debugging:
 
-1. **Transform Excel to JSON:**
-   ```bash
-   python transform_sp_excel_performance_to_json.py
-   ```
+```bash
+# Stage 1 only: Excel to aggregate JSON
+python transform_sp_excel_performance_to_json.py
 
-2. **Transform JSON to Evaluation Report JSON:**
-   ```bash
-   python transform_sp_json_to_eval_report_json.py
-   ```
+# Stage 2 only: Aggregate JSON to individual reports (requires Stage 1 output)
+python transform_sp_json_to_eval_report_json.py
 
-3. **Generate HTML Report:**
-   The main script `main_generate_report.py` is responsible for this step after the previous transformations are complete.
+# Stage 3 only: Generate HTML reports (requires Stage 2 output)
+python generate_html_reports.py
+```
+
+**Note**: Each stage depends on the output of the previous stage, so ensure prerequisites exist before running individual stages.
 
 ## Features
 

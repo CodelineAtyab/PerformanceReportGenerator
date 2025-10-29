@@ -2,9 +2,6 @@ import jinja2
 import os
 import json
 
-import transform_sp_excel_performance_to_json
-import transform_sp_json_to_eval_report_json
-
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PARENT_DIR = os.path.join(BASE_DIR, 'templates')
@@ -41,7 +38,7 @@ def generate_evaluation_report(data, template_name='report_template.html', outpu
         print(f"An error occurred: {e}")
 
 
-def generate_all_evaluation_reports():
+def main():
     """
     Generates evaluation reports for all JSON files in the transformed data directory.
     """
@@ -114,11 +111,4 @@ def generate_all_evaluation_reports():
 
 
 if __name__ == '__main__':
-    # Step 1: Transform Sharepoint Excel performance data to JSON
-    transform_sp_excel_performance_to_json.main()
-
-    # Step 2: Transform JSON data in step 1 to evaluation report JSON data
-    transform_sp_json_to_eval_report_json.main()
-
-    # Use the evaluation report JSON data to generate .html reports for all team members
-    generate_all_evaluation_reports()
+    main()
