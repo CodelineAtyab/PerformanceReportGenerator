@@ -117,8 +117,8 @@ if __name__ == '__main__':
     # Step 1: Transform Sharepoint Excel performance data to JSON
     transform_sp_excel_performance_to_json.main()
 
-    # Step 2: Transform JSON data to evaluation report JSON
+    # Step 2: Transform JSON data in step 1 to evaluation report JSON data
     transform_sp_json_to_eval_report_json.main()
 
-    # Generate .html reports for all team members
+    # Use the evaluation report JSON data to generate .html reports for all team members
     generate_all_evaluation_reports()
