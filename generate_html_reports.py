@@ -105,7 +105,7 @@ def main():
                     """
 
                     # Generate the report
-                    generate_evaluation_report(json_file_dict, output_filename=transformed_file.replace('.json', '_report.html'))
+                    generate_evaluation_report(json_file_dict, output_filename=transformed_file.replace('.json', '.html'))
             except Exception as e:
                 print(f"Failed to generate report for {transformed_file}: {e}")
 
