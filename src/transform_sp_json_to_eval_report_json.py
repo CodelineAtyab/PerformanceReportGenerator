@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 SOURCE_JSON = BASE_DIR / "transformed_data" / "sharepoint_excel_to_json_data" / "team_code_orbit_data.json"
 OUTPUT_DIR = BASE_DIR / "transformed_data" / "individual_reports"
 

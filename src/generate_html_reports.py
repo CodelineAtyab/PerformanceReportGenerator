@@ -2,11 +2,13 @@ import jinja2
 import os
 import json
 
+from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_PARENT_DIR = os.path.join(BASE_DIR, 'templates')
-TRANSFORMED_JSON_DATA_DIR = os.path.join(BASE_DIR, 'transformed_data', 'individual_reports')
-OUTPUT_DIR = os.path.join(BASE_DIR, 'output_reports_html')
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+TEMPLATE_PARENT_DIR = BASE_DIR / 'templates'
+TRANSFORMED_JSON_DATA_DIR = BASE_DIR / 'transformed_data' / 'individual_reports'
+OUTPUT_DIR = BASE_DIR / 'output_reports_html'
 
 
 def generate_evaluation_report(data, template_name='report_template.html', output_filename='evaluation_report.html'):

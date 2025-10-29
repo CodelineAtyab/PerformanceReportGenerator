@@ -1,9 +1,10 @@
 import os
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-HTML_REPORTS_DIR = os.path.join(BASE_DIR, 'output_reports_html')
-PDF_OUTPUT_DIR = os.path.join(BASE_DIR, 'output_reports_pdf')
+BASE_DIR = Path(__file__).resolve().parent.parent
+HTML_REPORTS_DIR = BASE_DIR / 'output_reports_html'
+PDF_OUTPUT_DIR = BASE_DIR / 'output_reports_pdf'
 
 
 def generate_pdf_from_html_playwright(html_file_path, pdf_output_path):
