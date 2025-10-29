@@ -1,6 +1,7 @@
 import transform_sp_excel_performance_to_json
 import transform_sp_json_to_eval_report_json
 import generate_html_reports
+import generate_pdf_from_html_with_playwright
 
 
 if __name__ == '__main__':
@@ -14,4 +15,4 @@ if __name__ == '__main__':
     generate_html_reports.main()
 
     # Step 4: Generate a pdf for all the HTML reports
-    # generate_html_reports.generate_pdfs()
+    generate_pdf_from_html_with_playwright.main()

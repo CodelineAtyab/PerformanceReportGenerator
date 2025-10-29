@@ -5,6 +5,6 @@ __pycache__/
 .env
 .DS_Store
 .idea/
-output_reports/
+output_reports*/
 logs/
 transformed_data/
