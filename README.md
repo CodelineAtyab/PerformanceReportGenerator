@@ -35,13 +35,37 @@ The Performance Report Generator is a tool designed to create performance report
 
 ## Usage
 
-Run the application using the main script:
+To generate the performance reports, you need to run a series of scripts in order. The main script orchestrates the entire process, but you can also run the steps individually.
+
+### Running All Steps
+
+To run all the steps and generate the final report, use the `main_generate_report.py` script:
 
 ```bash
-python main_generate_report.py [arguments]
+python main_generate_report.py
 ```
 
-Replace `[arguments]` with the appropriate command-line arguments for your specific reporting needs.
+This script will:
+1. Transform the Excel data to JSON format.
+2. Transform the JSON data to the evaluation report format.
+3. Generate the final HTML report.
+
+### Individual Steps
+
+You can also run each step individually:
+
+1. **Transform Excel to JSON:**
+   ```bash
+   python transform_sp_excel_performance_to_json.py
+   ```
+
+2. **Transform JSON to Evaluation Report JSON:**
+   ```bash
+   python transform_sp_json_to_eval_report_json.py
+   ```
+
+3. **Generate HTML Report:**
+   The main script `main_generate_report.py` is responsible for this step after the previous transformations are complete.
 
 ## Features
 
