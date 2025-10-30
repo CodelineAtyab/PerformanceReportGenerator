@@ -92,7 +92,14 @@ def _parse_member_metrics(raw_metrics: Iterable[List[str]]) -> Dict[str, Optiona
 def _derive_monthly_note(metrics: Dict[str, Optional[float]], for_month: str) -> str:
 	sprint_score = metrics.get(SPRINT_SCORE_KEY) or metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
 	quiz_score = metrics.get(QUIZ_SCORE_KEY)
-	monthly_eval = metrics.get(MONTHLY_EVAL_KEY) or metrics.get(MONTHLY_EVAL_WITHOUT_QUIZ_KEY) or metrics.get(FINAL_EVAL_KEY)
+	monthly_eval = None
+
+	if MONTHLY_EVAL_KEY in metrics:
+		monthly_eval = metrics[MONTHLY_EVAL_KEY]
+	elif MONTHLY_EVAL_WITHOUT_QUIZ_KEY in metrics:
+		monthly_eval = metrics[MONTHLY_EVAL_WITHOUT_QUIZ_KEY]
+	elif FINAL_EVAL_KEY in metrics:
+		monthly_eval = metrics[FINAL_EVAL_KEY]
 
 	if for_month == "August 2025":
 		return f"Sprint score: {sprint_score:.2f}%, Hackathon score: {metrics.get(HACKATHON_SCORE_KEY, 0.0):.2f}%."
