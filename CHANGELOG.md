@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1.0
+### Commit History
+- [2025-10-30] Doc generation and doc to pdf works
+
 ## Version 1.0.0
 ### Commit History
 - [2025-10-29 15:02:45] Installed Playwright to generate pdf reports from html with charts
