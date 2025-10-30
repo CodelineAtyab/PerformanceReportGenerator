@@ -23,6 +23,7 @@ LOW_WEIGHT_SPRINT_SCORE_KEY = "Sprint commitments vs deliveries total score (out
 QUIZ_SCORE_KEY = "Mini Quizzes total score (out of 10%)"
 HACKATHON_SCORE_KEY = "Hackathon (out of 50%)"
 MONTHLY_EVAL_KEY = "Monthly Evaluation (out of 40%)"
+MONTHLY_EVAL_WITHOUT_QUIZ_KEY = "Monthly Evaluation (out of 50%)"
 FINAL_EVAL_KEY = "Final Evaluation (out of 90%)"
 TOTAL_SCORE_KEY = "Total Score (out of 100%)"
 
@@ -35,6 +36,11 @@ TARGET_MONTHS = (
 	"August 2025",
 	"September 2025",
 	"October 2025",
+)
+
+FINAL_EVAL_MONTHS = (
+	"September 2025", 
+	"October 2025"
 )
 
 
@@ -84,13 +90,13 @@ def _parse_member_metrics(raw_metrics: Iterable[List[str]]) -> Dict[str, Optiona
 
 
 def _derive_monthly_note(metrics: Dict[str, Optional[float]], for_month: str) -> str:
-	sprint_score = metrics.get(SPRINT_SCORE_KEY) if for_month not in ("September 2025", "October 2025") else metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
+	sprint_score = metrics.get(SPRINT_SCORE_KEY) or metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
 	quiz_score = metrics.get(QUIZ_SCORE_KEY)
-	monthly_eval = metrics.get(MONTHLY_EVAL_KEY) if for_month not in ("September 2025", "October 2025") else metrics.get(FINAL_EVAL_KEY)
+	monthly_eval = metrics.get(MONTHLY_EVAL_KEY) or metrics.get(MONTHLY_EVAL_WITHOUT_QUIZ_KEY) or metrics.get(FINAL_EVAL_KEY)
 
 	if for_month == "August 2025":
 		return f"Sprint score: {sprint_score:.2f}%, Hackathon score: {metrics.get(HACKATHON_SCORE_KEY, 0.0):.2f}%."
-	elif for_month in ("September 2025", "October 2025"):
+	elif for_month in FINAL_EVAL_MONTHS:
 		return "Final evaluation in the form of technical interviews are 90% and sprint 10%"
 	else:
 		return (
@@ -122,7 +128,7 @@ def _build_monthly_progress(
 		progress.append(
 			{
 				"month": month,
-				"percentage": total_score if month not in ("September 2025", "October 2025") else total_score * 100,
+				"percentage": total_score if month not in FINAL_EVAL_MONTHS else total_score * 100,
 				"notes": _derive_monthly_note(metrics, for_month=month),
 			}
 		)
@@ -139,13 +145,13 @@ def _build_sprint_velocity(member_name: str, team_payload: Dict[str, dict],) -> 
 		if not raw_metrics:
 			continue
 		metrics = _parse_member_metrics(raw_metrics)
-		sprint_committed = 50 if month not in ("September 2025", "October 2025") else 10  # Last two sprints have less weight
-		total_delivered = metrics.get(SPRINT_SCORE_KEY) if metrics.get(SPRINT_SCORE_KEY) else metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
+		sprint_committed = 50 if month not in FINAL_EVAL_MONTHS else 10  # Last two sprints have less weight
+		total_delivered = metrics.get(SPRINT_SCORE_KEY) or metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
 		velocity.append(
 			{
 				"sprint": month,
 				"committed": round(sprint_committed, 2),
-				"delivered": round(total_delivered, 2) if month not in ("September 2025", "October 2025") else round(total_delivered * 100, 2)
+				"delivered": round(total_delivered, 2) if month not in FINAL_EVAL_MONTHS else round(total_delivered * 100, 2)
 			}
 		)
 	

@@ -2,7 +2,7 @@ import src.transform_sp_excel_performance_to_json as transform_sp_excel_performa
 import src.transform_sp_json_to_eval_report_json as transform_sp_json_to_eval_report_json
 import src.generate_html_reports as generate_html_reports
 import src.generate_doc_from_html as generate_doc_from_html
-import src.generate_pdf_from_html_with_playwright as generate_pdf_from_html_with_playwright
+# import src.generate_pdf_from_html_with_playwright as generate_pdf_from_html_with_playwright
 import src.generate_pdf_from_doc as generate_pdf_from_doc
 
 
