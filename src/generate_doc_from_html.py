@@ -37,6 +37,38 @@ def add_table_with_data(doc, headers, rows, col_widths=None):
     return table
 
 
+def add_hyperlink(paragraph, url, text):
+    """Add a hyperlink to a paragraph."""
+    # This function adds a hyperlink with proper formatting
+    part = paragraph.part
+    r_id = part.relate_to(url, 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink', is_external=True)
+    
+    hyperlink = paragraph._element
+    hyperlink_tag = hyperlink.makeelement('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}hyperlink')
+    hyperlink_tag.set('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id', r_id)
+    
+    run_element = hyperlink_tag.makeelement('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r')
+    run_properties = run_element.makeelement('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}rPr')
+    
+    # Add underline and color for hyperlink
+    u_element = run_properties.makeelement('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}u')
+    u_element.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', 'single')
+    run_properties.append(u_element)
+    
+    color_element = run_properties.makeelement('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}color')
+    color_element.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', '0563C1')
+    run_properties.append(color_element)
+    
+    run_element.append(run_properties)
+    
+    text_element = run_element.makeelement('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t')
+    text_element.text = text
+    run_element.append(text_element)
+    
+    hyperlink_tag.append(run_element)
+    hyperlink.append(hyperlink_tag)
+
+
 def add_summary_table(doc, data_dict):
     """Create a two-column summary table."""
     table = doc.add_table(rows=len(data_dict), cols=2)
@@ -47,6 +79,44 @@ def add_summary_table(doc, data_dict):
         row_cells[0].text = key
         row_cells[0].paragraphs[0].runs[0].font.bold = True
         row_cells[1].text = str(value)
+    
+    return table
+
+
+def add_summary_table_with_note(doc, data_dict, note_text=None, note_url=None):
+    """Create a two-column summary table with optional note row."""
+    table = doc.add_table(rows=len(data_dict), cols=2)
+    table.style = 'Light Grid Accent 1'
+    
+    for i, (key, value) in enumerate(data_dict.items()):
+        row_cells = table.rows[i].cells
+        row_cells[0].text = key
+        row_cells[0].paragraphs[0].runs[0].font.bold = True
+        row_cells[1].text = str(value)
+    
+    # Add note row if provided
+    if note_text:
+        row_cells = table.add_row().cells
+        # Merge both cells for the note
+        row_cells[0].merge(row_cells[1])
+        paragraph = row_cells[0].paragraphs[0]
+        
+        if note_url:
+            # Split note text at the link
+            parts = note_text.split('Attendance Details')
+            if len(parts) == 2:
+                run = paragraph.add_run(parts[0])
+                run.font.bold = True
+                add_hyperlink(paragraph, note_url, 'Attendance Details')
+                if len(parts[1]) > 0:
+                    run2 = paragraph.add_run(parts[1])
+                    run2.font.bold = True
+            else:
+                run = paragraph.add_run(note_text)
+                run.font.bold = True
+        else:
+            run = paragraph.add_run(note_text)
+            run.font.bold = True
     
     return table
 
@@ -129,7 +199,9 @@ def generate_doc_report(json_path, output_path, html_path=None):
         'Days Present': attendance['present_days'],
         'Days Absent': attendance['absent_days']
     }
-    add_summary_table(doc, attendance_info)
+    note_text = 'Note: Check out complete attendance details on Sharepoint: Attendance Details'
+    note_url = 'https://rihalom598.sharepoint.com/:x:/s/CodelineAffairs/ES6xjksQQ4dNqy9VzbRFa8sBwI9eShNDFoJgmnIeRzDPHA?e=0ns2m5'
+    add_summary_table_with_note(doc, attendance_info, note_text, note_url)
     doc.add_paragraph()
     
     # Sprint Velocity
@@ -167,11 +239,24 @@ def generate_doc_report(json_path, output_path, html_path=None):
             plagiarism
         ])
     
-    add_table_with_data(doc, sprint_headers, sprint_rows)
+    table = add_table_with_data(doc, sprint_headers, sprint_rows)
     
-    # Add plagiarism note
-    note = doc.add_paragraph('Some commitments are not considered as delivered if there is a case of plagiarism.')
-    note.runs[0].font.color.rgb = RGBColor(255, 0, 0)
+    # Add plagiarism note row
+    note_row = table.add_row()
+    merged_cell = note_row.cells[0].merge(note_row.cells[3])
+    paragraph = merged_cell.paragraphs[0]
+    run = paragraph.add_run('Note: Some commitments are not considered as delivered if there is a case of plagiarism.')
+    run.font.color.rgb = RGBColor(255, 0, 0)
+    run.font.bold = True
+    
+    # Add SharePoint link note row
+    link_row = table.add_row()
+    merged_cell = link_row.cells[0].merge(link_row.cells[3])
+    paragraph = merged_cell.paragraphs[0]
+    run = paragraph.add_run('Note: Check out the complete Sprint Details on Sharepoint: ')
+    run.font.bold = True
+    add_hyperlink(paragraph, 'https://rihalom598.sharepoint.com/:x:/s/CodelineAffairs/EehfSy55bmhGnWc5rCqXoOsB0EczeURsqmlCdKgH55vl6A?e=anrUrL', 'Sprint Details')
+    
     doc.add_paragraph()
     
     # Monthly Evaluation Outcomes
