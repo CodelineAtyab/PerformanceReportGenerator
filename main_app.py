@@ -13,11 +13,11 @@ if __name__ == '__main__':
     
     # Step 1: Transform Sharepoint Excel performance data to JSON
     print("\n[Stage 1/6] Excel → Aggregate JSON")
-    transform_sp_excel_performance_to_json.main()
+    # transform_sp_excel_performance_to_json.main()
 
     # Step 2: Transform JSON data in step 1 to evaluation report JSON data
     print("\n[Stage 2/6] Aggregate JSON → Individual Report JSONs")
-    transform_sp_json_to_eval_report_json.main()
+    # transform_sp_json_to_eval_report_json.main()
 
     # Step 3: Use the evaluation report JSON data to generate .html reports for all team members
     print("\n[Stage 3/6] Individual JSONs → HTML Reports")
