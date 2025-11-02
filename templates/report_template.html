@@ -104,6 +104,7 @@
                 <tr><td>Total Working Days</td><td>{{ attendance_summary.total_days }}</td></tr>
                 <tr><td>Days Present</td><td>{{ attendance_summary.present_days }}</td></tr>
                 <tr><td>Days Absent</td><td>{{ attendance_summary.absent_days }}</td></tr>
+                <tr><td colspan="2" style="font-weight: bold;">Note: Check out complete attendance details on Sharepoint: <a href="https://rihalom598.sharepoint.com/:x:/s/CodelineAffairs/ES6xjksQQ4dNqy9VzbRFa8sBwI9eShNDFoJgmnIeRzDPHA?e=0ns2m5" target="_blank">Attendance Details</a></td></tr>
             </table>
             {% if attendance_details %}
             <h3>Absence Details</h3>
@@ -133,12 +134,17 @@
                         <td>{{ sprint.sprint }}</td>
                         <td>{{ sprint.committed }}</td>
                         <td>{{ sprint.delivered }}</td>
-                        <td style="color: {% if sprint.plagiarism == 'Yes' %}red{% else %}green{% endif %}; font-weight: bold;">{{ sprint.plagiarism|default("No") }}</td>
+                    <td style="color: {% if sprint.plagiarism == 'Yes' %}red{% else %}green{% endif %}; font-weight: bold;">{{ sprint.plagiarism|default("No") }}</td>
                     </tr>
                     {% endfor %}
+                    <tr>
+                        <td colspan="4" style="color: red; font-weight: bold;">Note: Some commitments are not considered as delivered if there is a case of plagiarism.</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="font-weight: bold;">Note: Check out the complete Sprint Details on Sharepoint: <a href="https://rihalom598.sharepoint.com/:x:/s/CodelineAffairs/EehfSy55bmhGnWc5rCqXoOsB0EczeURsqmlCdKgH55vl6A?e=anrUrL" target="_blank">Sprint Details</a></td>
+                    </tr>
                 </tbody>
             </table>
-            <p style="color: red;">Some commitments are not considered as delivered if there is a case of plagiarism.</p>
         </div>
 
         <div class="section">
