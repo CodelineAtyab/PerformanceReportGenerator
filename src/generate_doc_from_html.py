@@ -192,17 +192,17 @@ def generate_doc_report(json_path, output_path, html_path=None):
     doc.add_paragraph()
     
     # Attendance Summary
-    add_header_with_style(doc, 'Attendance Summary', level=2)
-    attendance = data['attendance_summary']
-    attendance_info = {
-        'Total Working Days': attendance['total_days'],
-        'Days Present': attendance['present_days'],
-        'Days Absent': attendance['absent_days']
-    }
-    note_text = 'Note: Check out complete attendance details on Sharepoint: Attendance Details'
-    note_url = 'https://rihalom598.sharepoint.com/:x:/s/CodelineAffairs/ES6xjksQQ4dNqy9VzbRFa8sBwI9eShNDFoJgmnIeRzDPHA?e=0ns2m5'
-    add_summary_table_with_note(doc, attendance_info, note_text, note_url)
-    doc.add_paragraph()
+    # add_header_with_style(doc, 'Attendance Summary', level=2)
+    # attendance = data['attendance_summary']
+    # attendance_info = {
+    #     'Total Working Days': attendance['total_days'],
+    #     'Days Present': attendance['present_days'],
+    #     'Days Absent': attendance['absent_days']
+    # }
+    # note_text = 'Note: Check out complete attendance details on Sharepoint: Attendance Details'
+    # note_url = 'https://rihalom598.sharepoint.com/:x:/s/CodelineAffairs/ES6xjksQQ4dNqy9VzbRFa8sBwI9eShNDFoJgmnIeRzDPHA?e=0ns2m5'
+    # add_summary_table_with_note(doc, attendance_info, note_text, note_url)
+    # doc.add_paragraph()
     
     # Sprint Velocity
     add_header_with_style(doc, 'Sprint Velocity', level=2)
