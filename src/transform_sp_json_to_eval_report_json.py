@@ -14,16 +14,17 @@ from typing import Dict, Iterable, List, Optional
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SOURCE_JSON = BASE_DIR / "transformed_data" / "sharepoint_excel_to_json_data" / "team_code_orbit_data.json"
+SOURCE_JSON = BASE_DIR / "transformed_data" / "sharepoint_excel_to_json_data" / "team_brain_n_bytes_data.json"
 OUTPUT_DIR = BASE_DIR / "transformed_data" / "individual_reports"
 
 # Keys used inside the source Excel-derived JSON structure.
 SPRINT_SCORE_KEY = "Sprint commitments vs deliveries total score (out of 50%)"
-LOW_WEIGHT_SPRINT_SCORE_KEY = "Sprint commitments vs deliveries total score (out of 10%)"
+LOW_WEIGHT_SPRINT_SCORE_KEY = "Sprint commitments vs deliveries total score (out of 30%)"
 QUIZ_SCORE_KEY = "Mini Quizzes total score (out of 10%)"
 HACKATHON_SCORE_KEY = "Hackathon (out of 50%)"
 MONTHLY_EVAL_KEY = "Monthly Evaluation (out of 40%)"
 MONTHLY_EVAL_WITHOUT_QUIZ_KEY = "Monthly Evaluation (out of 50%)"
+MONTHLY_EVAL_EXCLUDING_SPRINT_WORK = "Monthly Evaluation (out of 100%)"
 FINAL_EVAL_KEY = "Final Evaluation (out of 90%)"
 TOTAL_SCORE_KEY = "Total Score (out of 100%)"
 
@@ -39,7 +40,6 @@ TARGET_MONTHS = (
 )
 
 FINAL_EVAL_MONTHS = (
-	"September 2025", 
 	"October 2025"
 )
 
@@ -100,11 +100,13 @@ def _derive_monthly_note(metrics: Dict[str, Optional[float]], for_month: str) ->
 		monthly_eval = metrics[MONTHLY_EVAL_WITHOUT_QUIZ_KEY]
 	elif FINAL_EVAL_KEY in metrics:
 		monthly_eval = metrics[FINAL_EVAL_KEY]
+	elif MONTHLY_EVAL_EXCLUDING_SPRINT_WORK in metrics:
+		monthly_eval = metrics[MONTHLY_EVAL_EXCLUDING_SPRINT_WORK]
 
 	if for_month == "August 2025":
-		return f"Sprint score: {sprint_score:.2f}%, Hackathon score: {metrics.get(HACKATHON_SCORE_KEY, 0.0):.2f}%."
+		return f"Hackathon score: {metrics.get(HACKATHON_SCORE_KEY, 0.0):.2f}%."
 	elif for_month in FINAL_EVAL_MONTHS:
-		return "Final evaluation in the form of technical interviews are 90% and sprint 10%"
+		return "Final evaluation in the form of technical interviews are 70% and sprint 30%"
 	else:
 		return (
 			"Sprint score: {sprint}, Quiz: {quiz}, Monthly evaluation: {monthly}."
@@ -135,7 +137,7 @@ def _build_monthly_progress(
 		progress.append(
 			{
 				"month": month,
-				"percentage": total_score if month not in FINAL_EVAL_MONTHS else total_score * 100,
+				"percentage": total_score,
 				"notes": _derive_monthly_note(metrics, for_month=month),
 			}
 		)
@@ -152,13 +154,13 @@ def _build_sprint_velocity(member_name: str, team_payload: Dict[str, dict],) -> 
 		if not raw_metrics:
 			continue
 		metrics = _parse_member_metrics(raw_metrics)
-		sprint_committed = 50 if month not in FINAL_EVAL_MONTHS else 10  # Last two sprints have less weight
-		total_delivered = metrics.get(SPRINT_SCORE_KEY) or metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY)
+		sprint_committed = 50 if month not in FINAL_EVAL_MONTHS else 30  # Last sprint has less weight
+		total_delivered = metrics.get(SPRINT_SCORE_KEY) or metrics.get(LOW_WEIGHT_SPRINT_SCORE_KEY) or sprint_committed
 		velocity.append(
 			{
 				"sprint": month,
 				"committed": round(sprint_committed, 2),
-				"delivered": round(total_delivered, 2) if month not in FINAL_EVAL_MONTHS else round(total_delivered * 100, 2)
+				"delivered": round(total_delivered, 2)
 			}
 		)
 	
@@ -213,7 +215,7 @@ def _build_member_payload(member_name: str, team_payload: Dict[str, dict]) -> Di
 
 	return {
 		"employee_name": member_name,
-		"team": "Team Code Orbit (AIOps)",
+		"team": "Team Brain & Bytes (Data Science)",
 		"evaluation_period": _evaluation_period(monthly_progress),
 		"generation_date": datetime.utcnow().isoformat(timespec="seconds") + "Z",
 		"attendance_summary": {
